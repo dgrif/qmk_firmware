@@ -58,6 +58,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /* audio support */
 #define B7_AUDIO
 #define C4_AUDIO
+#define AUDIO_CLICKY
 
 /* number of backlight levels */
 // #define BACKLIGHT_PIN B7
@@ -68,6 +69,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define LOCKING_SUPPORT_ENABLE
 /* Locking resynchronize hack */
 #define LOCKING_RESYNC_ENABLE
+
+#define RGB_DI_PIN C6
+#define RGBLIGHT_ANIMATIONS
+#define RGBLED_NUM 16
+#define RGBLIGHT_HUE_STEP 8
+#define RGBLIGHT_SAT_STEP 8
+#define RGBLIGHT_VAL_STEP 8
 
 /* If defined, GRAVE_ESC will always act as ESC when CTRL is held.
  * This is userful for the Windows task manager shortcut (ctrl+shift+esc).
