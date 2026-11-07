@@ -1,7 +1,7 @@
 // this is the style you want to emulate.
 // This is the canonical layout file for the Quantum project. If you want to add another keyboard,
 
-#include "dichotomy.h"
+#include QMK_KEYBOARD_H
 
 // Each layer gets a name for readability, which is then used in the keymap matrix below.
 // The underscores don't mean anything - you can have a layer called STUFF or any other name.
@@ -28,9 +28,9 @@ enum dichotomy_keycodes
   NUMKEY,
   SFTKEY,
   MOUKEY,
-  MS_BTN1,
-  MS_BTN2,
-  MS_BTN3
+  CK_MSE1,
+  CK_MSE2,
+  CK_MSE3
 };
 
 #define CUSTOM_LONGPRESS 150
@@ -40,17 +40,13 @@ enum dichotomy_keycodes
 #define GREEN_BRIGHTNESS 2
 #define BLUE_BRIGHTNESS 2
 
-// Fillers to make layering more clear
-#define _______ KC_TRNS
-#define XXXXXXX KC_NO
-
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 [_BS] = LAYOUT( /* Base layout, nearly qwerty but with modifications because it's not a full keyboard. Obviously. */
   CK_TE,   KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,           KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_BSPC,
   NUMKEY,  KC_A,    KC_S,    KC_D,    KC_F,    KC_G,           KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, CK_QE,
   SFTKEY,  KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,           KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, MOUKEY,
                              KC_LCTL, KC_LALT, KC_LGUI,        KC_RGUI, KC_RALT, KC_RCTL,
-                    MS_BTN3, KC_LBRC, KC_LPRN, KC_SPC,         KC_SPC,  KC_RPRN, KC_RBRC, MS_BTN3
+                    CK_MSE3, KC_LBRC, KC_LPRN, KC_SPC,         KC_SPC,  KC_RPRN, KC_RBRC, CK_MSE3
 ),
 
 [_SF] = LAYOUT( /* Shifted layout, small changes (because angle brackets have been moved to thumb cluster buttons) */
@@ -79,7 +75,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 [_MS] = LAYOUT( /* Mouse layer, including buttons for clicking. */
   _______, _______, _______, _______, _______, _______,        KC_VOLU, KC_HOME, KC_PGUP, _______, _______, _______,
-  _______, _______, _______, _______, _______, _______,        _______, MS_BTN1, MS_BTN2, _______, _______, _______,
+  _______, _______, _______, _______, _______, _______,        _______, CK_MSE1, CK_MSE2, _______, _______, _______,
   _______, _______, _______, _______, _______, _______,        KC_VOLD, KC_END,  KC_PGDN, _______, _______, _______,
   							 _______, _______, _______,        _______, KC_UP,   _______,
 					_______, _______, _______, _______,        KC_LEFT, KC_DOWN, KC_RGHT, _______
@@ -113,7 +109,7 @@ report_mouse_t currentReport = {};
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 	//uint8_t layer;
-	//layer = biton32(layer_state);  // get the current layer  //Or don't, I didn't use it.
+	//layer = get_highest_layer(layer_state);  // get the current layer  //Or don't, I didn't use it.
 	bool returnVal = true; //this is to determine if more key processing is needed.
 
 	 //custom layer handling for tri_layer,
@@ -150,7 +146,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 				shiftLED = false;
 				if (timer_elapsed(shift_timer) < CUSTOM_TOGGLE_TIME && shift_singular_key) {
 					//this was basically a toggle, so activate/deactivate caps lock.
-					SEND_STRING(SS_TAP(X_CAPSLOCK));
+					SEND_STRING(SS_TAP(X_CAPS_LOCK));
 					capsLED = !capsLED;
 				}
 				layer_off(_SF);
@@ -220,7 +216,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 				} else {
 					if (special_key_pressed[CK_BSPE-SAFE_RANGE]){
 						//key was not activated, return macro activating proper, pre-long-tap key
-						SEND_STRING(SS_TAP(X_BSLASH));
+						SEND_STRING(SS_TAP(X_BACKSLASH));
 						special_key_pressed[CK_BSPE-SAFE_RANGE] = 0;
 					} else {
 						//the short key was already sent, because another key was pressed.
@@ -315,7 +311,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 		break;
 
 		//mouse buttons, for 1-3, to update the mouse report:
-		case MS_BTN1:
+		case CK_MSE1:
 			currentReport = pointing_device_get_report();
 			if (record->event.pressed) {
 				if (shift_held && shift_suspended){
@@ -331,7 +327,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 			pointing_device_set_report(currentReport);
 			returnVal = false;
 		break;
-		case MS_BTN2:
+		case CK_MSE2:
 			currentReport = pointing_device_get_report();
 			if (record->event.pressed) {
 				if (shift_held && shift_suspended){
@@ -347,7 +343,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 			pointing_device_set_report(currentReport);
 			returnVal = false;
 		break;
-		case MS_BTN3:
+		case CK_MSE3:
 			currentReport = pointing_device_get_report();
 			if (record->event.pressed) {
 				if (shift_held && shift_suspended){
@@ -420,7 +416,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 								SEND_STRING(SS_TAP(X_1));
 							break;
 							case CK_BSPE:
-								SEND_STRING(SS_TAP(X_BSLASH));
+								SEND_STRING(SS_TAP(X_BACKSLASH));
 							break;
 							case CK_QE:
 								SEND_STRING(SS_TAP(X_QUOTE));
@@ -441,7 +437,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 };
 
 void matrix_scan_user(void) {
-	//uint8_t layer = biton32(layer_state);
+	//uint8_t layer = get_highest_layer(layer_state);
 	for (uint8_t i = 0; i<LONGPRESS_COUNT; i++){
 		if ((timer_elapsed(special_timers[i]) >= CUSTOM_LONGPRESS) && (!special_key_states[i]) && special_key_pressed[i]){
 			switch (i + SAFE_RANGE){
