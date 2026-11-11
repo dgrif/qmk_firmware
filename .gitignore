@@ -103,6 +103,9 @@ tags
 !docs/public/**.jpeg
 !docs/public/**.png
 
+# Historical Zygomorph beta-board repair references
+!keyboards/rgbkb/zygomorph/beta_fix/*.jpg
+
 # Things Travis sees
 /.vs
 id_rsa_*
